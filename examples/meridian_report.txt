@@ -1,0 +1,51 @@
+Meridian Industrial Corp. (illustrative): DCF valuation (USD millions, except per-share data)
+
+  Fiscal year                   FY2026E    FY2027E    FY2028E    FY2029E    FY2030E
+  Revenue                       2,592.0    2,786.4    2,967.5    3,130.7    3,271.6
+    growth                         8.0%       7.5%       6.5%       5.5%       4.5%
+  EBITDA                          544.3      599.1      652.9      704.4      752.5
+    margin                        21.0%      21.5%      22.0%      22.5%      23.0%
+  EBIT                            440.6      487.6      534.2      579.2      621.6
+  Less: taxes                     105.8      117.0      128.2      139.0      149.2
+  Plus: D&A                       103.7      111.5      118.7      125.2      130.9
+  Less: CapEx                     129.6      133.7      136.5      137.8      137.4
+  Less: increase in NWC            26.0       23.3       21.7       19.6       16.9
+  Unlevered FCF                   282.9      325.0      366.4      408.1      449.0
+  Discount factor                0.9551     0.8714     0.7949     0.7252     0.6616
+  PV of UFCF                      270.2      283.2      291.3      295.9      297.0
+
+  WACC build
+    Levered beta                    1.19
+    Cost of equity                11.30%
+    After-tax cost of debt         4.56%
+    Debt / total capital           25.0%
+    WACC                           9.61%
+
+                                        Perpetuity   Exit multiple
+  Assumption                             g = 2.50%    10.0x EBITDA
+  Terminal value                           6,468.9         7,524.7
+  PV of terminal value                     4,279.9         4,755.1
+  Sum of PV of UFCF                        1,437.7         1,437.7
+  Enterprise value                         5,717.6         6,192.8
+  PV of TV, % of EV                          74.9%           76.8%
+  Implied multiple / growth                   9.0x           3.17%
+  Equity value                             5,087.6         5,562.8
+  Diluted shares                           122.777         123.127
+  Implied share price                        41.44           45.18
+  Upside vs 38.50                             7.6%           17.3%
+
+  Implied share price: perpetuity growth method  (rows: WACC, columns: Terminal growth rate)
+                  1.50%      2.00%      2.50%      3.00%      3.50%
+     8.61%        42.78      45.60      48.87      52.72      57.34
+     9.11%        39.69      42.10      44.87      48.09      51.89
+     9.61%        36.94      39.05      41.44      44.16      47.33
+    10.11%        34.50      36.34      38.42      40.79      43.47
+    10.61%        32.33      33.95      35.76      37.81      40.15
+
+  Implied share price: exit multiple method  (rows: WACC, columns: Exit EV/EBITDA multiple)
+                   8.0x       9.0x      10.0x      11.0x      12.0x
+     8.61%        39.35      43.28      47.20      51.12      55.04
+     9.11%        38.49      42.35      46.18      50.01      53.84
+     9.61%        37.64      41.44      45.18      48.92      52.67
+    10.11%        36.82      40.55      44.21      47.87      51.53
+    10.61%        36.03      39.67      43.26      46.84      50.42

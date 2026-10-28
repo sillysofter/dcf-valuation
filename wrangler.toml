@@ -1,0 +1,4 @@
+# Cloudflare Pages: the site is static files in web/, so there is no build step.
+name = "dcf-valuation"
+pages_build_output_dir = "web"
+compatibility_date = "2026-10-01"

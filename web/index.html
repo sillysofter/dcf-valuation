@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DCF Valuation Model</title>
+  <meta name="description" content="Interactive discounted cash flow model: WACC build, perpetuity and exit-multiple terminal values, treasury stock method and sensitivity tables.">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="theme.js"></script>
+  <script src="dcf.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>DCF Valuation Model</h1>
+      <p id="subtitle" class="muted">Discounted cash flow analysis</p>
+    </div>
+    <nav class="actions" aria-label="Model actions">
+      <button type="button" id="share" class="btn">Copy share link</button>
+      <details class="menu">
+        <summary class="btn">Download</summary>
+        <div class="menu-items">
+          <button type="button" data-download="yaml">Inputs (.yaml for the CLI)</button>
+          <button type="button" data-download="csv">Projections (.csv)</button>
+          <button type="button" data-download="json">Full results (.json)</button>
+        </div>
+      </details>
+      <button type="button" id="reset" class="btn">Reset to example</button>
+      <button type="button" id="theme" class="btn icon" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+    </nav>
+  </header>
+
+  <div id="error" class="error" role="alert" hidden></div>
+
+  <main class="layout">
+    <form id="inputs" class="inputs" autocomplete="off" novalidate>
+      <p class="muted small">Blue fields are inputs. Percentages are entered as percent (8 = 8%). Money in the stated units.</p>
+
+      <fieldset>
+        <legend>Company</legend>
+        <label class="row">Name <input name="company.name" type="text"></label>
+        <label class="row">Currency <input name="company.currency" type="text" maxlength="3" class="short"></label>
+        <label class="row">Units <input name="company.units" type="text" class="short"></label>
+        <label class="row">Base fiscal year <input name="base_year.fiscal_year" type="number" step="1" class="short"></label>
+        <label class="row">Base-year revenue <input name="base_year.revenue" type="number" step="any"></label>
+        <label class="row">Base-year net working capital <input name="base_year.net_working_capital" type="number" step="any"></label>
+        <label class="row">Tax rate (%) <input name="projections.tax_rate" data-pct type="number" step="any"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Projection drivers (%)</legend>
+        <div class="scroll-x">
+          <table class="drivers" id="drivers"></table>
+        </div>
+        <div class="inline-buttons">
+          <button type="button" class="btn small" id="add-year">+ Year</button>
+          <button type="button" class="btn small" id="remove-year">− Year</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Cost of capital</legend>
+        <label class="row">Risk-free rate (%) <input name="wacc.risk_free_rate" data-pct type="number" step="any"></label>
+        <label class="row">Equity risk premium (%) <input name="wacc.equity_risk_premium" data-pct type="number" step="any"></label>
+        <label class="row">Unlevered beta <input name="wacc.unlevered_beta" type="number" step="any"></label>
+        <label class="row">Size premium (%) <input name="wacc.size_premium" data-pct type="number" step="any"></label>
+        <label class="row">Target debt / capital (%) <input name="wacc.target_debt_to_capital" data-pct type="number" step="any"></label>
+        <label class="row">Pre-tax cost of debt (%) <input name="wacc.pre_tax_cost_of_debt" data-pct type="number" step="any"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Terminal value</legend>
+        <label class="row">Perpetuity growth (%) <input name="terminal.growth_rate" data-pct type="number" step="any"></label>
+        <label class="row">Exit EV/EBITDA (x) <input name="terminal.exit_multiple" type="number" step="any"></label>
+        <label class="row check"><input name="terminal.mid_year_convention" type="checkbox"> Mid-year convention</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Equity bridge</legend>
+        <label class="row">Total debt <input name="balance_sheet.debt" type="number" step="any"></label>
+        <label class="row">Preferred equity <input name="balance_sheet.preferred_equity" type="number" step="any"></label>
+        <label class="row">Minority interest <input name="balance_sheet.minority_interest" type="number" step="any"></label>
+        <label class="row">Cash <input name="balance_sheet.cash" type="number" step="any"></label>
+        <label class="row">Non-operating assets <input name="balance_sheet.non_operating_assets" type="number" step="any"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Shares</legend>
+        <label class="row">Basic shares <input name="shares.basic" type="number" step="any"></label>
+        <label class="row">RSUs <input name="shares.rsus" type="number" step="any"></label>
+        <label class="row">Current share price <input name="shares.current_price" type="number" step="any" placeholder="optional"></label>
+        <table class="options" id="options"></table>
+        <div class="inline-buttons">
+          <button type="button" class="btn small" id="add-option">+ Option tranche</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <section class="outputs" aria-live="polite">
+      <div class="tiles" id="tiles"></div>
+
+      <article class="card">
+        <header class="card-head">
+          <h2>Valuation range</h2>
+          <p class="muted small">Implied share price across each sensitivity grid. Dot = base case.</p>
+        </header>
+        <div id="football" class="chart"></div>
+      </article>
+
+      <article class="card">
+        <header class="card-head">
+          <h2>Unlevered free cash flow</h2>
+          <p class="muted small" id="fcf-note"></p>
+        </header>
+        <div id="fcf-chart" class="chart"></div>
+        <div class="scroll-x"><table class="num-table" id="fcf-table"></table></div>
+      </article>
+
+      <div class="grid-2">
+        <article class="card">
+          <header class="card-head"><h2>Enterprise to equity value</h2></header>
+          <div class="scroll-x"><table class="num-table" id="valuation-table"></table></div>
+        </article>
+        <article class="card">
+          <header class="card-head"><h2>WACC build</h2></header>
+          <table class="num-table" id="wacc-table"></table>
+        </article>
+      </div>
+
+      <article class="card">
+        <header class="card-head">
+          <h2>Sensitivity analysis</h2>
+          <p class="muted small" id="sens-note"></p>
+        </header>
+        <div class="grid-2" id="sensitivity"></div>
+      </article>
+
+      <footer class="foot muted small">
+        <p>Same engine as the <code>dcfmodel</code> Python package; the test suite checks the two agree. Download the inputs as YAML and run <code>dcfmodel inputs.yaml --excel model.xlsx</code> for a formula-driven Excel model. Calculations run entirely in your browser; nothing is uploaded.</p>
+        <p>For education and demonstration only. Not investment advice. The example company is fictional.</p>
+      </footer>
+    </section>
+  </main>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</body>
+</html>

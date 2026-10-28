@@ -1,0 +1,52 @@
+# Illustrative DCF inputs for a FICTIONAL mid-cap industrial company.
+# Every number below is made up for demonstration. Replace them with figures from
+# the company's 10-K / annual report, consensus estimates and market data.
+# Money in millions of the stated currency; shares in millions; rates as decimals (0.05 = 5%).
+
+company:
+  name: Meridian Industrial Corp. (illustrative)
+  currency: USD
+  units: millions
+  valuation_date: 2025-12-31        # end of the base fiscal year
+
+base_year:
+  fiscal_year: 2025
+  revenue: 2400.0
+  net_working_capital: 285.0        # receivables + inventory - payables (operating items only)
+
+projections:                        # one value per projection year; a single number repeats for every year
+  revenue_growth:    [0.080, 0.075, 0.065, 0.055, 0.045]
+  ebitda_margin:     [0.210, 0.215, 0.220, 0.225, 0.230]
+  da_pct_revenue:    0.040
+  capex_pct_revenue: [0.050, 0.048, 0.046, 0.044, 0.042]
+  nwc_pct_revenue:   0.120
+  tax_rate: 0.24
+
+wacc:
+  risk_free_rate: 0.0425            # 10-year government bond yield
+  equity_risk_premium: 0.0550
+  unlevered_beta: 0.95              # median of comparable companies, unlevered
+  size_premium: 0.0050
+  target_debt_to_capital: 0.25
+  pre_tax_cost_of_debt: 0.0600      # yield to maturity on the company's debt
+
+terminal:
+  growth_rate: 0.025
+  exit_multiple: 10.0               # EV / EBITDA, from trading comparables
+  mid_year_convention: true
+
+balance_sheet:                      # as of the valuation date
+  debt: 900.0
+  cash: 250.0
+  minority_interest: 40.0
+  preferred_equity: 0.0
+  non_operating_assets: 60.0
+
+shares:
+  basic: 120.0
+  rsus: 1.5
+  options:
+    - {count: 3.0, strike: 25.00}
+    - {count: 2.5, strike: 40.00}
+    - {count: 1.0, strike: 60.00}
+  current_price: 38.50
