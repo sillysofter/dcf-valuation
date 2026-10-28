@@ -2,11 +2,11 @@
 
 A discounted cash flow (DCF) model built the way investment banks build one. You enter the assumptions in a YAML file. The model projects unlevered free cash flow, builds WACC from CAPM, values the business with both the **perpetuity growth** and **exit multiple** methods, bridges enterprise value to equity value, and solves the **treasury stock method** for diluted shares. It produces **sensitivity tables** and exports a **formula-driven Excel model**: change any blue input in Excel and the share price updates.
 
-It also runs as a **website** ([web/](web/)): an interactive version you can host free on Cloudflare Pages. It recalculates as you type, draws charts, and lets you share any scenario as a link.
+It also runs as a **website** ([web/](web/)): an interactive version you can host free on Cloudflare. It recalculates as you type, draws charts, and lets you share any scenario as a link.
 
 The included example is a **fictional** mid-cap industrial company with made-up numbers ([configs/example.yaml](configs/example.yaml)).
 
-**Live demo:** `https://<your-project>.pages.dev` *(replace once deployed)*
+**Live demo:** `https://dcf-valuation.<your-subdomain>.workers.dev` *(replace once deployed)*
 
 ## Features
 
@@ -96,16 +96,18 @@ Run it locally:
 python -m http.server 8000 --directory web    # then open http://localhost:8000
 ```
 
-### Deploying to Cloudflare Pages
+### Deploying to Cloudflare
+
+[wrangler.toml](wrangler.toml) deploys `web/` as a Cloudflare Worker that serves static files. There is no build step and no server code.
 
 1. Push this repository to GitHub.
-2. In the Cloudflare dashboard go to **Workers & Pages → Create → Pages → Connect to Git**, and pick the repository.
-3. Build settings: framework preset **None**, build command **empty**, build output directory **`web`**. ([wrangler.toml](wrangler.toml) sets the same output directory.)
-4. Click **Save and Deploy**. Every push to `main` redeploys, and pull requests get preview URLs.
+2. In the Cloudflare dashboard go to **Workers & Pages → Create → Import a repository**, and pick the repository.
+3. Keep the defaults: deploy command `npx wrangler deploy`, and no build command needed. The project name must match `name` in `wrangler.toml` (`dcf-valuation`).
+4. Deploy. Every push to `main` redeploys. The site is served at `https://dcf-valuation.<your-subdomain>.workers.dev`, and you can attach your own domain under **Settings → Domains & Routes**.
 
-Or deploy from your machine without Git: `npx wrangler pages deploy web`.
+Or deploy from your machine without Git: `npx wrangler deploy`.
 
-[web/_headers](web/_headers) sets a strict Content Security Policy (no inline or third-party scripts) and other security headers. Cloudflare Pages applies it automatically.
+[web/_headers](web/_headers) sets a strict Content Security Policy (no inline or third-party scripts) and other security headers. Cloudflare applies it automatically.
 
 ## Methodology
 
@@ -200,12 +202,12 @@ src/dcfmodel/
 ├── excel.py        # formula-driven Excel export
 ├── report.py       # text report and JSON output
 └── cli.py          # command-line interface
-web/                # static website for Cloudflare Pages
+web/                # static website for Cloudflare
 ├── index.html
 ├── dcf.js          # JavaScript port of the engine (tested against Python)
 ├── app.js          # UI: inputs, charts, sharing, downloads
 ├── styles.css
-└── _headers        # security headers for Cloudflare Pages
+└── _headers        # security headers for Cloudflare
 configs/            # example assumptions
 examples/           # sample report, Excel model and JSON output
 tests/              # pytest suite

@@ -1,4 +1,7 @@
-# Cloudflare Pages: the site is static files in web/, so there is no build step.
+# Cloudflare Workers static assets: the site is the files in web/, served as-is (no build step, no Worker script).
+# web/_headers (security headers) is applied automatically.
 name = "dcf-valuation"
-pages_build_output_dir = "web"
 compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./web"
